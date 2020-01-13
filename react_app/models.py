@@ -16,24 +16,21 @@ class Collections(models.Model):
 
 class Book(models.Model):
     collection = models.ForeignKey(Collections, default=None, null=True, on_delete = models.SET_DEFAULT)
-    book_name = models.CharField(max_length=200,blank=True, null=True)
-    book_author = models.CharField(max_length=200, blank=True, null=True)
-    isbn = models.CharField(max_length=200, blank=True, null=True)
-    year = models.PositiveSmallIntegerField(blank=True, null=True)
+    google_volume_id = models.CharField(max_length=20, default=None)
 
-    def __str__(self):
-        return self.book_name
 
-    def __str__(self):
-        return self.book_author
+class User(models.Model):
+    collection = models.ForeignKey(Collections, default=None, null=True, on_delete = models.SET_DEFAULT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete = models.SET_DEFAULT)
 
-    class Meta:
-        ordering=['book_author']
+    def user_name(self):
+        full_name =self.user.get_full_name()
+        return full_name
 
 
 class Comment(models.Model):
     book = models.ForeignKey(Book, default=None, null=True, on_delete = models.SET_DEFAULT)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete = models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, null=True, on_delete = models.SET_DEFAULT)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -43,10 +40,6 @@ class Comment(models.Model):
     def __str__(self):
         return self.content
 
-    def user_name(self):
-        full_name =self.user.get_full_name()
-        return full_name
-
     class Meta:
         ordering = ('timestamp',)
 
@@ -54,8 +47,3 @@ class Comment(models.Model):
 class Rating(models.Model):
     book = models.ForeignKey(Book, default=None, null=True, on_delete = models.SET_DEFAULT)
     star_rating = models.PositiveSmallIntegerField(blank=True, null=True)
-
-
-
-
-    
